@@ -1,0 +1,10 @@
+body {
+    min-width: 1000px;
+    min-height: 1000px;
+}
+
+.edit_png {
+    width: 32px;
+    height: 32px;
+    background-color: black
+}

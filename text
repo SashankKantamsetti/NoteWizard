@@ -1,0 +1,118 @@
+(() => {
+    let currentVideo = "";
+
+    const newVideoLoaded = async () => {
+        const noteButtonExists = document.getElementsByClassName("note_but")[0];
+        if (!noteButtonExists) {
+            const noteButton = document.createElement("img");
+            noteButton.src = chrome.runtime.getURL("edit.png");
+            noteButton.className = "ytp-button note_but";
+            noteButton.title = "Click to take a ScreenShot Note!";
+            noteButton.style.width = '32px !important';
+            noteButton.style.width = '32px !important';
+            noteButton.style.transform = "scale(0.5)";
+
+            const youtubeRightControls = document.getElementsByClassName("ytp-right-controls")[0];
+            const youtubePlayer = document.getElementsByClassName("video-stream")[0];
+            const pauseButton = document.querySelector(".ytp-play-button");
+
+            youtubeRightControls.appendChild(noteButton);
+
+
+            const jQueryURL = chrome.runtime.getURL("jquery.min.js");
+            const jQueryElement = document.createElement("script");
+            jQueryElement.src = jQueryURL;
+            //jQueryElement.onload = () => {
+
+                function cropperArea() {
+                    if (youtubePlayer && pauseButton && pauseButton.title != "Play (k)") {
+                        pauseButton.click();
+                        const cropperCSS = document.createElement("link");
+                        cropperCSS.rel = "stylesheet";
+                        cropperCSS.href = chrome.runtime.getURL("croppie.css");
+                        document.head.appendChild(cropperCSS);
+
+                        const cropperJSURL = chrome.runtime.getURL("croppie.js");
+                        const cropperJS = document.createElement("script");
+                        cropperJS.src = cropperJSURL;
+
+                        cropperJS.onload = () => {
+                            const cropContainer = document.createElement("div");
+                            cropContainer.id = "crop-container";
+                            cropContainer.style.position = "absolute";
+                            cropContainer.style.top = "0";
+                            cropContainer.style.left = "0";
+                            cropContainer.style.width = "100%";
+                            cropContainer.style.height = "100%";
+
+                            // Append the div element after the video element
+                            youtubePlayer.parentNode.insertBefore(cropContainer, youtubePlayer.nextSibling);
+
+                            // Call the Croppie initialization code inside the div element
+                            const cropper = new Croppie(document.getElementById("crop-container"), {
+                                viewport: { width: 300, height: 300 },
+                                boundary: { width: 400, height: 400 },
+
+                            });
+
+                            cropper.bind({
+                                url: youtubePlayer.src,
+                                points: [0, 0, 1, 1]
+                            })
+                            cropContainer.style.display = "block";
+                        }
+                        document.head.appendChild(cropperJS);
+                        /*const canvas = document.createElement("canvas");
+                        const context = canvas.getContext("2d");
+                        canvas.width = youtubePlayer.videoWidth;
+                        canvas.height = youtubePlayer.videoHeight;
+                        context.drawImage(youtubePlayer, 0, 0, canvas.width, canvas.height);
+
+                        const image_crop = new Image();
+                        image_crop.src = canvas.toDataURL();
+                        image_crop.onload = () => {
+                            console.log("Image Loaded!");
+                            $(() => {
+                                const cropper = new Cropper(image_crop, {
+                                    dragMode: 'crop',
+                                    cropBoxResizable: true,
+                                    cropBoxMovable: true,
+                                    viewMode: 1,
+                                    crop: function (event) {
+                                        const croppedData = event.Detail;
+                                        console.log(croppedData);
+                                    },
+                                });
+                            });
+                        }*/
+
+
+                    }
+                }
+
+                noteButton.addEventListener('click', cropperArea);
+            //};
+
+            document.head.appendChild(jQueryElement);
+        }
+    }
+
+    // When received message
+    chrome.runtime.onMessage.addListener((obj, sender, response) => {
+        const { type, value, videoID } = obj;
+        if (type == "NEW") {
+            currentVideo = videoID;
+            newVideoLoaded();
+        }
+    });
+
+    newVideoLoaded();
+})();
+
+console.log(3);
+
+
+/*noteButton.title.style.fontSize = "10px";
+            noteButton.title.style.fontFamily = "Roboto, Arial, sans-serif";
+            noteButton.title.style.backgroundColor = "#424242";
+            noteButton.title.style.color = "#fff";*/

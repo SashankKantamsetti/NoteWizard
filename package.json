@@ -13,6 +13,8 @@
     "cropper": "^4.1.0",
     "cropperjs": "^1.5.13",
     "croppie": "^2.6.5",
-    "jcrop": "^0.0.1"
+    "jcrop": "^0.0.1",
+    "node.js": "^0.0.1-security",
+    "tesseract.js": "^4.1.1"
   }
 }

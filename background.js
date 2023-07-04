@@ -21,9 +21,7 @@ async function getCurrentTab() {
     let [tabs] = await chrome.tabs.query(queryOptions);
     console.log(tabs);
 }
-getCurrentTab();
-console.log(2); */
-
+getCurrentTab();*/
 
 // Function to handle the YouTube page update
 function handleYouTubePageUpdate(tabId) {
@@ -42,6 +40,8 @@ function handleYouTubePageUpdate(tabId) {
   });
 }
 
+
+
 // Event listener for tab activation
 chrome.tabs.onActivated.addListener((activeInfo) => {
   const tabId = activeInfo.tabId;
@@ -51,7 +51,6 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 /*chrome.tabs.onUpdated.addListener((tabId, tab) => {
   handleYouTubePageUpdate(tabId);
 })*/
-
 // Check the currently active tab when the extension is first loaded
 chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
   const currentTab = tabs[0];
@@ -66,13 +65,14 @@ let URLSent;
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log("BackroundJS message received!");
   console.log(message);
-  if(message.pausedImageURL){
+  if (message.pausedImageURL) {
     URLSent = message.pausedImageURL;
     await chrome.runtime.sendMessage({ URLSent });
-      console.log("BackroundJS message sent!");
+    console.log("BackroundJS message sent!");
   }
-  else if(message.requestImage){
+  else if (message.requestImage) {
     chrome.runtime.sendMessage({ URLSent });
   }
 });
+
 

@@ -2,6 +2,89 @@ loadingELement = document.getElementById('loading');
 resultElement = document.getElementById('result');
 saveButton = document.getElementById('save');
 
+function saveNoteToStorage(note) {
+  chrome.storage.local.get('notes', function (result) {
+    const notes = result.notes || [];
+    notes.push(note);
+    chrome.storage.local.set({ notes: notes }, function () {
+      console.log('Note saved:', note);
+    });
+  });
+}
+
+function getAllNotesFromStorage(callback) {
+  chrome.storage.local.get('notes', function (result) {
+    const notes = result.notes || [];
+    callback(notes);
+  });
+}
+
+function deleteNoteFromStorage(noteId) {
+  chrome.storage.local.get('notes', function (result) {
+    const notes = result.notes || [];
+    const updatedNotes = notes.filter(note => note.title !== noteId);
+    chrome.storage.local.set({ notes: updatedNotes }, function () {
+      console.log('Note deleted:', noteId);
+      displayAllNotes(updatedNotes);
+    });
+  });
+}
+
+function displayAllNotes(notes) {
+  const notesContainer = document.getElementById('notes-container');
+  notesContainer.innerHTML = '';
+
+  notes.forEach(function (note) {
+    const noteElement = document.createElement('div');
+    noteElement.id = 'note';
+    const subNoteElement = document.createElement('div');
+    subNoteElement.id = 'sub-note';
+    const noteBlock = document.createElement('button');
+    noteBlock.id = 'note-title';
+    noteBlock.textContent = `${note.title}`;
+    const noteText = document.createElement('textarea');
+    noteText.id = 'note-text';
+    noteText.rows = 65;
+    noteText.cols = 30;
+    noteText.value = note.text;
+    const copyButton = document.createElement('button');
+    copyButton.id = 'copy-but';
+    copyButton.textContent = 'Copy';
+    const deleteButton = document.createElement('button');
+    deleteButton.id = 'delete-but';
+    deleteButton.textContent = 'Delete';
+    noteBlock.addEventListener('click', function () {
+      if (noteText.style.display === 'none') {
+        noteText.style.display = 'block';
+        copyButton.style.display = 'block';
+        deleteButton.style.display = 'block';
+      }
+      else {
+        noteText.style.display = 'none';
+        copyButton.style.display = 'none';
+        deleteButton.style.display = 'none';
+      }
+    });
+    copyButton.addEventListener('click', async function () {
+      noteText.select();
+      await navigator.clipboard.writeText(noteText.value);
+      copyButton.textContent = "Copied!"
+      setTimeout(function () {
+        copyButton.textContent = 'Copy';
+      }, 2000);
+    })
+    deleteButton.addEventListener('click', () => {
+      deleteNoteFromStorage(note.title);
+    })
+    subNoteElement.appendChild(noteBlock);
+    subNoteElement.appendChild(copyButton);
+    subNoteElement.appendChild(deleteButton);
+    noteElement.appendChild(subNoteElement);
+    noteElement.appendChild(noteText);
+    notesContainer.appendChild(noteElement);
+  });
+}
+
 function downloadTextFile(filename, text) {
   const element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -19,6 +102,11 @@ async function saveFile() {
   try {
     const filename = `${noteName}.txt`;
     downloadTextFile(filename, resultElement.value);
+    const note = { title: noteName, text: resultElement.value };
+    saveNoteToStorage(note);
+
+    getAllNotesFromStorage(displayAllNotes);
+
     console.log('Note saved successfully!');
   }
   catch (err) {
@@ -94,4 +182,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Call the function to handle the message immediately after the listener is set up
 chrome.runtime.sendMessage({ requestImage: true }, handleMessage);
+
+getAllNotesFromStorage(displayAllNotes);
 

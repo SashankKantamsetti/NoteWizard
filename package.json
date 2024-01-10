@@ -1,0 +1,20 @@
+{
+  "name": "notewizard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cropper": "^4.1.0",
+    "cropperjs": "^1.5.13",
+    "croppie": "^2.6.5",
+    "jcrop": "^0.0.1",
+    "node.js": "^0.0.1-security",
+    "tesseract.js": "^4.1.1"
+  }
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Wizard</title>
+    <link rel="stylesheet" href="popup.css">
+    <script type="module" src="contentScript.js"></script>
+    <link rel="stylesheet" href="./node_modules/cropperjs/dist/cropper.min.css">
+</head>
+
+<body>
+    <h1 class="no_notes_des">Note Wizard</h1>
+    <div class="image-container">
+        <img id="cropped" src="" alt="">
+        <button id="cropButton">Get Text</button>
+    </div>
+    <div id="notes-container">
+        <div id="note">
+            <div id="sub-note">
+                <button id="note-title">Title</button>
+                <textarea id="note-text" cols="65" rows="30"></textarea>
+            </div>
+        </div>
+    </div>
+    <div id="loading">Loading...</div>
+    <textarea id="result" cols="65" rows="30"></textarea>
+    <button id="save">Save Text</button>
+    <script src="popup.js"></script>
+    <script src="./node_modules/cropperjs/dist/cropper.min.js"></script>
+    <script src="tesseract.min.js"></script>
+    <script src="worker.min.js"></script>
+</body>
+
+</html>
